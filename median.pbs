@@ -1,0 +1,19 @@
+#!/bin/bash
+#PBS -l nodes=4:ppn=2
+#PBS -l walltime=00:0:10
+#PBS -o pfilter.out
+#PBS -A lc_an2
+#PBS -j oe
+#PBS -N pfilter
+
+WORK_HOME=/path/to/homework2/src
+
+cd $WORK_HOME
+np=$(cat $PBS_NODEFILE | wc -l)
+
+filter=median
+
+# note that we will vary window size when testing
+window_size=4
+mpirun -np $np -machinefile $PBS_NODEFILE ./pfilter input/moon_in.tiff moon_out.tif $filter $window_size
+
