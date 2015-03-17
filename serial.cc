@@ -43,7 +43,8 @@ std::string serial_main(int argc, char* argv[])
   }
 
   std::cout << "* saving image: " << outFilename << std::endl;
-  output.save_tiff_grey_8bit(outFilename);
+  // output.save_tiff_grey_8bit(outFilename);
+  output.save_tiff_grey_32bit(outFilename);
 
   std::cout << "-- done --" << std::endl;
 

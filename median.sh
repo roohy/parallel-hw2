@@ -11,5 +11,5 @@ filter=median
 
 # note that we will vary window size when testing
 window_size=4
-mpirun -np 4 ./pfilter input/moon_in.tiff moon_out.tiff $filter $window_size
+mpirun -np 5 ./pfilter input/moon_in.tiff moon_out.tiff $filter $window_size
 

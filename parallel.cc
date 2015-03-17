@@ -53,14 +53,14 @@ std::string parallel_main(int argc, char* argv[])
     // portion.buildFromArray(input.getArray(),input.width(),input.height()/count);
     
     input.make_greyscale();
-    int pace = input.width()*input.height()/count;
+    int pace = input.width()*(input.height()/count);
     int tempPace = pace + edge*input.width();
     int startPoint=0;
     int size = input.width()*input.height();
     int tempWidth=input.width(),tempHeight;
     // std::cout<<"INPUT H&W "<<input.width()<<"--"<<input.height()<<std::endl;
     for ( int i = 1 ; i < count ; i++){
-      startPoint = i*input.width()*input.height()/count;
+      startPoint = i*pace;//input.width()*input.height()/count;
       // startPoint = (startPoint- edge*input.width() > 0 )? startPoint - edge*input.width() : startPoint;
       startPoint = startPoint - edge*input.width();
       if( i == count -1 )
@@ -78,7 +78,7 @@ std::string parallel_main(int argc, char* argv[])
         ,MPI_INT, i,0,MPI_COMM_WORLD);
       //MPI_Send(&i,1, MPI_INT,i,0,MPI_COMM_WORLD);
       // std::cout<<"sent everything on parent node--"<<i<<std::endl;
-
+      
     }
       // startPoint = i*input.width()*input.height()/count;
       tempHeight = ((tempPace < size) ? (input.height()/count)+edge:  (pace < size?(input.height()/count): (size)/input.width()));
@@ -95,6 +95,8 @@ std::string parallel_main(int argc, char* argv[])
     image = (uint32_t *)tempInt;
     // std::cout<<"received the array"<<std::endl;
     portion.buildFromArray(image,width,height);
+    //if( rank == 1)
+      // portion.save_tiff_grey_8bit("firstImage");
 
 
   }
@@ -130,11 +132,11 @@ std::string parallel_main(int argc, char* argv[])
       temp = new uint32_t[height*width];
       MPI_Recv(tempInt,width*height,MPI_INT,i,0,MPI_COMM_WORLD,&status);
       temp = (uint32_t *)tempInt;
-      //Image tempImage;
-      //tempImage.buildFromArray(temp+(edge*width),width,height);
+      Image tempImage;
+      tempImage.buildFromArray(temp+(edge*width),width,height);
       portion.mergeVerticals(temp,width,height,edge);
-      // portion.save_tiff_grey_8bit("tempSave.tiff");
-      
+      //if( i == 1)
+        //tempImage.save_tiff_grey_8bit("tempSave.tiff");
       // tempImage.save_tiff_grey_8bit("ff.tiff");
       
       //std::cout<<"received  "<<t<<std::endl;
@@ -144,8 +146,11 @@ std::string parallel_main(int argc, char* argv[])
               << std::endl;
     std::cout<<"end "<<portion.width()<<"----"<<portion.height()<<std::endl;
     output.buildFromArray(portion.getArray(),portion.width(),portion.height());
-    output.save_tiff_grey_8bit(outFilename);
+    // output.save_tiff_grey_8bit(outFilename);
+    output.save_tiff_grey_32bit(outFilename);
   }else{
+      if( rank == 1)
+        portion.save_tiff_grey_8bit("fa");
       MPI_Send(&portion.width(),1,MPI_INT,0,0,MPI_COMM_WORLD);
       MPI_Send(&portion.height(),1,MPI_INT,0,0,MPI_COMM_WORLD);
       MPI_Send(portion.getArray(),portion.width()*portion.height(),MPI_INT,0,0,MPI_COMM_WORLD);

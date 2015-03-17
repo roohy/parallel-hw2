@@ -1,12 +1,15 @@
 #!/bin/bash
-#PBS -l nodes=4:ppn=2
-#PBS -l walltime=00:0:10
+#PBS -l nodes=4:ppn=2:myri
+#PBS -l walltime=00:0:50
 #PBS -o pfilter.out
-#PBS -A lc_an2
+#PBS -A lc_jnc
 #PBS -j oe
 #PBS -N pfilter
 
-WORK_HOME=/path/to/homework2/src
+
+source /usr/usc/mpich2/1.3.1..10/setup.sh
+
+WORK_HOME=/home/rcf-40/rshemira/hw2/src
 
 cd $WORK_HOME
 np=$(cat $PBS_NODEFILE | wc -l)
